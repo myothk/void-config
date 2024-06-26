@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Install the dot files and conf files.
+
+root_dir="$( dirname -- $BASH_SOURCE )/root_dir"
+
+install_file(){
+
+}
+
+install_dir(){
+}
+
+

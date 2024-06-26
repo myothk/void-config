@@ -1,0 +1,140 @@
+//My Way Bar
+//Need and fontawesome6.
+{
+        "ipc": true,
+	"position": "top",
+	"height": 35,
+        "reload_style_on_change": true,
+	"modules-left": ["sway/workspaces","cpu","custom/powermode","custom/fanmode","sway/language"],
+	"modules-center": ["tray","sway/mode"],
+	"modules-right": ["network","pulseaudio","memory","clock","battery"],
+	
+	//moduels configuration
+	"sway/workspaces":{
+		"disable-scroll":true,
+		"format": "{icon}",
+		"format-icons": {
+			"1": "",
+			"2": "",
+			"3": "",
+			"4": "",
+			"5": "",
+
+			"urgent": "",
+			//"focused": "\uf32e",
+			"default": ""
+		},
+		"persistent-workspaces":{
+			"1":[],
+			"2":[],
+			"3":[],
+			"4":[],
+			"5":[],
+		}
+	},
+	
+	"clock": {
+		"format": "{:%I:%M %p}",
+		"interval": 1,
+		"format-alt": "{:%a %d/%m/%y - %T}",
+		"tooltip-format": "<tt><small>{calendar}</small></tt>",
+		"calendar":{
+			"mode"		: "year",
+			"mode-mon-col"	: 3,
+			"weeks-pos"	: "right",
+			"on-scroll"	: 1,
+			"on-click-right": "mode",
+			"format": {
+				"months":	"<span color='#ffead3'><b>{}</b></span>",
+				"days":		"<span color='#ecc6d9'><b>{}</b></span>",
+				"weeks":	"<span color='#99ffdd'><b>W{}</b></span>",
+				"weekdays":	"<span color='#ffcc66'><b>{}</b></span>",
+				"today":	"<span bgcolor='#d8d8d8' color='#000000'><b>{}</b></span>"
+			}
+		},
+		"actions": {
+			"on-scroll-up": "shift_up",
+			"on-scroll-down": "shift_down"
+		}	
+	},
+	"network": {
+		"format-ethernet": " {bandwidthUpBits}  {bandwidthDownBits}  ",
+		"format-wifi": " {bandwidthUpBits}  {bandwidthDownBits}",
+		"format-disconnected":"",
+		"interval": 1,
+		"tooltip-format": "{ifname}",
+		"tooltip-format-wifi": "{essid} ({signalStrength}%)",	
+	},
+	"cpu": {
+     		"interval": 1,
+     		//"format": "{icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}{icon8}{icon9}{icon10}{icon11}",
+     		"format": "{usage}%",
+                //"format-icons": [
+          	//"<span color='#69ff94'>▁</span>", // green
+          	//"<span color='#2aa9ff'>▂</span>", // blue
+          	//"<span color='#f8f8f2'>▃</span>", // white
+          	//"<span color='#f8f8f2'>▄</span>", // white
+          	//"<span color='#ffffa5'>▅</span>", // yellow
+          	//"<span color='#ff9977'>▆</span>", // yellow
+          	//"<span color='#ff9977'>▇</span>", // orange
+          	//"<span color='#dd532e'>█</span>"  // red
+    // ]
+},	
+	"memory":{
+		"format": "{used:.1f}/{total:.1f} GiB",
+		"interval": 1
+	},
+	"pulseaudio": {
+        	"format": "{icon} {volume}%{format_source}",
+        	"format-bluetooth": "{volume}% {icon} {format_source}",
+		"format-bluetooth-muted": "{icon}󰖁 {format_source}",
+		"format-muted": " {volume}% {format_source}",
+		"format-source": "",
+		"format-source-muted": "",
+		"format-icons": {
+                	"headphones": "",
+                	"handsfree": "󰟎",
+                	"headset": "󰋋",
+                	"phone": "",
+                	"portable": "",
+                	"car": "",
+                	"default": ["","",""]
+            	},
+            	"on-click": "pavucontrol"
+	},
+	"battery":{
+                "bat": "BAT0",
+                "states": {
+			"warning": 30,
+			"critical": 15,
+		},
+		"format": "{capacity} {icon}",
+		"format-charging": "{capacity} ",
+        	"format-icons": ["","","","",""],
+        	"tooltip-format": "{power} Watts"
+	},
+	"tray": {
+		"icon-size":21,
+                "show-passive-items": true,
+		"spacing":10
+	},
+        "sway/language": {
+                "format": "{shortDescription}",
+        },
+	"disk":{
+    		"interval": 30,
+    		"format": "{free}"
+	},
+	"custom/fanmode": {
+		"exec": "~/.config/scripts/fanmodecontrol.sh show 2> /dev/null",
+	//	"interval": 1,
+		"signal": 2,
+		"tooltip": false,
+	},
+	"custom/powermode":{
+		"exec": "~/.config/scripts/powermode.sh show 2> /dev/null",
+	        "interval": 1,
+		"signal": 1,
+		"tooltip": false,
+	},
+}

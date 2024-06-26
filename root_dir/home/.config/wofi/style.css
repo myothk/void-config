@@ -1,0 +1,32 @@
+#window{
+	background-color: #f5426c;
+	font-size: 12px;
+}
+#outer-box{
+	background-color: #2a0033;
+}
+#text{
+	margin-left: 20px;
+}
+#entry{
+	border:none;
+/*	text-align:center; */
+	min-width:50px;
+}
+#unselected {
+	color: white;
+}
+#entry:selected{
+	background-color: #f5426c;
+	color: white;
+	border:none;
+/*	text-align:center; */
+	min-height:30px;
+	min-width:50px;
+}
+#input {
+	background: #2a0033;
+	color: #ffffff;
+	border-radius:0px;
+	border:none;
+}

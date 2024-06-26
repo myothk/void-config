@@ -1,0 +1,54 @@
+#!/bin/sh
+# Default rc.local for void; add your custom commands here.
+#
+# This is run by runit in stage 2 before the services are executed
+# (see /etc/runit/2).
+clear
+
+#Set fan to asus silent mode
+thermal_file="/sys/devices/platform/asus-nb-wmi/throttle_thermal_policy"
+if [ -e $thermal_file ]; then
+	chmod o+w $thermal_file
+	echo 2 > $thermal_file
+fi
+
+#Set keyboard brightness to max brightness
+if [ -e /sys/class/backlight/intel_backlight/max_brightness ] && [ -e /sys/class/backlight/intel_backlight/brightness ]; then
+	echo $(cat /sys/class/backlight/intel_backlight/max_brightness) > /sys/class/backlight/intel_backlight/brightness
+fi
+
+#CPU frequency and performance optimizations
+if [ -e /sys/devices/system/cpu/intel_pstate/no_turbo ]; then
+	chmod o+w /sys/devices/system/cpu/intel_pstate/no_turbo
+	echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
+fi
+
+#CPU perf_modes
+CPU_BASE_FREQ=$(cat /sys/devices/system/cpu/cpu0/cpufreq/base_frequency)
+CPU_MIN_FREQ=$(cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq)
+CPU_MAX_FREQ=$(cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq)
+CPU_FREQ=$CPU_BASE_FREQ
+energy_mode=6
+if [ "$(cat /sys/class/power_supply/AC?/online)" -eq 0 ]; then
+	energy_mode=15
+        CPU_FREQ=$CPU_MIN_FREQ
+fi
+
+chmod o+w /sys/devices/system/cpu/cpu*/cpufreq/scaling_max_freq
+for cpudir in /sys/devices/system/cpu/cpu*/cpufreq;do
+    if [ -e "$cpudir/scaling_max_freq" ]; then
+        echo "$CPU_FREQ" > "$cpudir/scaling_max_freq"
+    fi
+done
+
+for energy_dir in /sys/devices/system/cpu/cpu*/power/; do
+	if [ -e "$energy_dir/energy_perf_bias" ]; then
+		chmod o+w "$energy_dir/energy_perf_bias"
+		echo $energy_mode > "$energy_dir/energy_perf_bias"
+	fi
+done
+
+#disable keyboard backlight
+if [ -e /sys/class/leds/asus\:\:kbd_backlight/brightness ]; then
+	echo 0 | tee /sys/class/leds/asus\:\:kbd_backlight/brightness > /dev/null
+fi
