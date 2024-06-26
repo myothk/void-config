@@ -1,0 +1,52 @@
+#!/bin/bash
+# When AC is not online on LAPTOPS, changes all monitors' refresh rates to lowest.
+# -v for verbose.
+ARG=$1
+debug(){ if [[  "$ARG" == "-v" ]];then return 0; else return 1; fi }
+
+# Check and get sway socket path.
+SWAY_SOCK=$(ls /run/user/*/sway-ipc.*sock)
+if [ ! -e "$SWAY_SOCK" ];then
+    echo "Eror: sway sock path does not exist. Exiting..."
+    exit 1
+fi
+
+# CONST vars. Keep sway output json, display names and display count.
+SWAY_OUTPUT="$(swaymsg --sock "$SWAY_SOCK" -t get_outputs --raw)"
+OUTPUTS="$(echo "$SWAY_OUTPUT" | jq -r '.[].name')"
+OUTPUT_COUNT="$(echo "$OUTPUTS" | wc -l)"
+debug && echo "$OUTPUT_COUNT monitor(s) detected: "$(echo $OUTPUTS | tr " " ",")
+
+# Check each monitor's properties in SWAY_OUTPUT json.
+INDEX=0
+for output in $OUTPUTS; do
+    debug && echo "Checking monitor $INDEX: $output"
+    curr_mode=$(echo "$SWAY_OUTPUT" | jq -r ".[$INDEX].current_mode" | jq -r '. | "\(.width)x\(.height)"')
+    curr_width=$(echo $curr_mode | cut -d "x" -f1)
+    curr_height=$(echo $curr_mode | cut -d "x" -f2)
+    curr_rate=$(echo "$SWAY_OUTPUT" | jq -r ".[$INDEX].current_mode" | jq -r '.refresh/1000')
+    debug && echo "  Current display mode is $curr_mode @ $(echo $curr_rate)Hz"
+    
+    # Get current monitor's other refresh rate @ same resolution.
+    avai_refresh_rates=$(echo "$SWAY_OUTPUT" | jq -r ".[$INDEX].modes.[] | select(.width == $curr_width and .height == $curr_height).refresh/1000" | sort -n)
+    if [ -n "$avai_refresh_rates" ];then
+        debug && echo "  Available refresh rates of $curr_mode resolution are: $(echo $avai_refresh_rates)" 
+        desired_rate=""
+        if [ "$(cat /sys/class/power_supply/AC?/online)" -eq 1 ];then
+            desired_rate="$(echo "$avai_refresh_rates" | tail -1)" 
+        elif [ "$(cat /sys/class/power_supply/AC?/online)" -eq 0 ]; then
+            desired_rate="$(echo "$avai_refresh_rates" | head -1)"
+        fi
+        debug && echo "  Desired rate is ${desired_rate}Hz"
+
+        # Change rate to AC power availability.
+        if [ "$curr_rate" != "$desired_rate" ];then
+            swaymsg --socket "$SWAY_SOCK" "output $output mode $curr_mode@${desired_rate}Hz" > /dev/null
+            debug && echo "  Display mode is changed to ${curr_mode}@${desired_rate}"
+        else debug && echo "  Current refresh rate is alreay ${curr_rate}Hz"
+        fi
+
+    else debug && echo "  No available modes."; debug "  Doing nothing.";
+    fi
+    INDEX=$((INDEX + 1))
+done

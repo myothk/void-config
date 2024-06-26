@@ -1,0 +1,136 @@
+#Basic varibales
+#Preferences Mod1 for Windows/Super key. Mod1 for alt
+set $mod Mod4
+set $term foot
+#set $dmenu dmenu-wl_run -h 40 -i -nb "#2a0033" -nf "#aaaaaa" -sf "#ffffff" -sb "#f5426c"
+set $dmenu wofi -c ~/.config/wofi/config --show=drun -a
+set $left h
+set $right l
+set $up k
+set $down j
+set $resizepx 10px
+floating_modifier $mod normal
+
+#Border
+default_border pixel 2
+default_floating_border pixel 2
+
+### Keymap ###
+input "type:keyboard" {
+	xkb_layout "us,mm"
+	xkb_options "grp:alt_shift_toggle"
+	repeat_delay 200
+	repeat_rate 30
+}
+
+
+### Display ###
+output eDP-1 {
+    bg ~/Pictures/wallpapers/mountain_1920x1080.png fill
+}
+xwayland disable
+bindsym XF86launch1 exec ~/.config/scripts/powermode.sh toggle
+bindsym XF86launch4 exec ~/.config/scripts/fanmodecontrol.sh toggle
+bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
+
+bindsym $mod+Return exec $term
+bindsym $mod+Shift+q kill
+bindsym $mod+d exec $dmenu
+bindsym $mod+Shift+r reload
+bindsym $mod+Shift+e exec swaynag --edge bottom --background 2a0033 --text ffffff -t warning -m 'You are going to logout of this session. Are you sure?' -B 'Logout' 'swaymsg exit'
+
+bindsym $mod+$left focus left
+bindsym $mod+$right focus right
+bindsym $mod+$up focus up
+bindsym $mod+$down focus down
+
+bindsym $mod+Left focus left
+bindsym $mod+Right focus right
+bindsym $mod+Up focus up
+bindsym $mod+Down focus down
+
+
+bindsym mod1+h splith
+bindsym mod1+v splitv
+
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+Tab workspace back_and_forth
+
+
+bindsym $mod+Shift+1 move container to workspace number 1; workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2; workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3; workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4; workspace number 4
+bindsym $mod+SHift+5 move container to workspace number 5; workspace number 5
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+bindsym $mod+f fullscreen
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+space focus mode_toggle
+bindsym $mod+a focus parent
+
+bindsym $mod+r mode "resize"
+
+bindsym $mod+Shift+minus move scratchpad
+bindsym $mod+minus scratchpad show
+
+bindsym Print exec grimshot --notify save screen ~/Pictures/Screenshots/$(date +'Screenshot_%Y-%m-%d-%H-%M-%S-%3N.png')
+bindsym Alt+Print exec grimshot --notify save active ~/Pictures/Screenshots/$(date +'Screenshot_%Y-%m-%d-%H-%M-%S-%3N_window.png')
+bindsym Shift+Print exec grimshot --notify save area  ~/Pictures/Screenshots/$(date +'Screenshot_%Y-%m-%d-%H-%M-%S-%3N_cropped.png')
+
+#bindsym $mod+b exec swaymsg 'bar bar0 mode toggle'
+
+#######   Startups  #######
+exec dbus-update-activation-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
+exec mako
+exec pipewire
+exec wireplumber
+exec pipewire-pulse
+exec /usr/libexec/polkit-mate-authentication-agent-1
+exec /usr/libexec/xdg-desktop-portal-wlr -r
+exec gsettings set org.gnome.desktop.interface cursor-theme Breeze_Amber
+exec_always ~/.config/scripts/refreshrate
+
+#Configs 
+mode "resize" {
+	bindsym Left resize shrink width $resizepx
+	bindsym Right resize grow width $resizepx
+	bindsym Up resize shrink height $resizepx
+	bindsym Down resize grow height $resizepx
+	bindsym Escape mode "default"
+	bindsym Return mode "default"
+}
+bar {
+        id bar0
+	swaybar_command waybar
+}
+
+#assign apps to workspaces
+for_window [window_role="dialog"] floating enable
+assign [app_id="^Firefox$"] 2
+for_window [app_id="^Firefox$"] workspace number 2
+assign [app_id="^foot$"] 1
+for_window [app_id="^foot$"] workspace number 1
+assign [app_id="^org.telegram.desktop$"] 4
+for_window [app_id="^org.telegram.desktop$"] workspace number 4
+assign [app_id="^blender$"] 3
+for_window [app_id="^blender$"] workspace 3
+for_window [app_id="^org.pulseaudio.pavucontrol$"] floating enable; resize set 500 300; move position 1420 px 0 ppt;
+
+
+####Theme####
+# class                 border  backgr. text    indicator child_border
+client.focused          #f5426c #f5426c #ffffff #74b3ed   #f5426c
+client.focused_inactive #333333 #5f676a #ffffff #484e50   #5f676a
+client.unfocused        #333333 #222222 #888888 #292d2e   #222222
+client.urgent           #2f343a #900000 #ffffff #900000   #900000
+client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
+
+client.background       #fffff

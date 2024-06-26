@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# This script synchronizes locally stored git dot files
+# with system dot files while keeping time stamps and 
+# file and directory permissions.
+
+root_dir="$( dirname -- "$BASH_SOURCE" )/root_dir"
+
+# Take at least 1 source, and 1 destination as arg
+# and copy source files to destination directory.
+update_file(){
+    source_files_count="$(($#-1))"
+    dest_dir="${@:$#}"			# Same as dest_dir="${!#}" and dest_dir="${@: -1:1}"
+    if [ ! -d "$dest_dir" ]; then
+        mkdir -p "$dest_dir"
+    fi
+    for file_id in $(seq 1 $source_files_count); do
+        source_file="${!file_id}"
+        cp -p $source_file "$dest_dir/$( basename $source_file )" && echo "$( basename -- $source_file ) copied"
+    done
+}
+
+# Take at least 1 source, and 1 destination as arg
+# and copy source directories to destination directory.
+update_dir(){
+    if [ ! -d "${@:$#}" ]; then
+        mkdir -p "${@:$#}"
+    fi
+    source_dirs_count="$(($#-1))"		# total number of source dirs
+    dest_dir="${@:$#}"			# arg No. of dest dir which is last arg
+    for dir_id in $(seq 1 $source_dirs_count); do
+        source_dir="${!dir_id}"
+        cp -pr $source_dir "$dest_dir/" && echo "$(basename $source_dir)/ is copied"
+    done
+}
+
+# Update desired files and directories 
+# with above functions.
+rm -rf "$root_dir"
+update_file ~/.bash_profile "$root_dir/home"
+update_file ~/.bashrc "$root_dir/home"
+update_dir ~/.config/{foot,lf,nvim,scripts,sway,waybar,wofi} "$root_dir/home/.config"
+update_dir /etc/{issue,rc.local} "$root_dir/etc"
+update_file ~/Pictures/wallpapers/mountain_1920x1080.png "$root_dir"
+update_file ~/Pictures/wallpapers/mountain_3840x2160.png "$root_dir"
