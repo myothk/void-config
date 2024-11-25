@@ -15,6 +15,12 @@ floating_modifier $mod normal
 default_border pixel 2
 default_floating_border pixel 2
 
+## Touchpad  ##
+input "type:touchpad" {
+    dwt enabled
+    tap enabled
+}
+
 ### Keymap ###
 input "type:keyboard" {
 	xkb_layout "us,mm"
@@ -28,7 +34,8 @@ input "type:keyboard" {
 output eDP-1 {
     bg ~/Pictures/wallpapers/mountain_1920x1080.png fill
 }
-xwayland disable
+
+xwayland enable
 bindsym XF86launch1 exec ~/.config/scripts/powermode.sh toggle
 bindsym XF86launch4 exec ~/.config/scripts/fanmodecontrol.sh toggle
 bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
@@ -96,7 +103,8 @@ exec pipewire-pulse
 exec /usr/libexec/polkit-mate-authentication-agent-1
 exec /usr/libexec/xdg-desktop-portal-wlr -r
 exec gsettings set org.gnome.desktop.interface cursor-theme Breeze_Amber
-exec_always ~/.config/scripts/refreshrate
+exec ~/.config/scripts/refreshrate
+exec udiskie -anT &
 
 #Configs 
 mode "resize" {
@@ -117,6 +125,8 @@ for_window [window_role="dialog"] floating enable
 assign [app_id="^Firefox$"] 2
 for_window [app_id="^Firefox$"] workspace number 2
 assign [app_id="^foot$"] 1
+for_window [app_id="^chromium$"] workspace number 2
+assign [app_id="^chromium$"] 2
 for_window [app_id="^foot$"] workspace number 1
 assign [app_id="^org.telegram.desktop$"] 4
 for_window [app_id="^org.telegram.desktop$"] workspace number 4

@@ -28,3 +28,4 @@ fi
 
 ## TODO
 # fix bug: gpu wakes up from D3cold to D0. 
+# can't... fan controls both gpu fan and cpu fan.

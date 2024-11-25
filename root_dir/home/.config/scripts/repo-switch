@@ -1,20 +1,16 @@
 #!/bin/bash
 
 switch_mirror(){
-	echo "$2 mirror detected. Switching to $3 mirror."
-	sudo sed -i "s/$2/$3/g" $file;
-	cat $file;
+    echo "$2 mirror detected. Switching to $3 mirror."
+    sudo sed -i "s/$2/$3/g" $1;
+    cat $file;
 }
 repo="$1"
-if [ "$(whoami)" != "root" ];then
-	echo "Error: Run this script as root. Exiting..."
-	exit 1
-fi
 if [ -z "$repo" ];then
-	for file in /etc/xbps.d/*.conf; do
-		if [ "$(grep -w 'repo-fastly.voidlinux' $file)" ]; then
-			switch_mirror $file fastly default;
-		else switch_mirror $file default fastly; 
-		fi
-	done
+    for file in /etc/xbps.d/*.conf; do
+	if [ "$(grep -w 'repo-fastly.voidlinux' $file)" ]; then
+	    switch_mirror $file fastly default;
+	else switch_mirror $file default fastly; 
+	fi
+    done
 fi

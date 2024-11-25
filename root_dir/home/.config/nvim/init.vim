@@ -1,4 +1,6 @@
+set relativenumber
 set number
+set numberwidth=4
 set autoindent
 syntax on
 set ttyfast

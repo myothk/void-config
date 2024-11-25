@@ -14,7 +14,7 @@ set dircounts true
 set info size
 set preview true
 set sixel true
-set previewer ~/.config/lf/previewer.sh
+set previewer ~/.config/lf/previewSandbox.sh
 set drawbox
 set cursorpreviewfmt "\033[4m"
 set icons true
@@ -60,7 +60,6 @@ cmd zip ${{
 cmd trash %trash-put $fx
 cmd clear-trash %trash-empty
 
-
 ##### mappings #####
 map <enter> shell
 map x $$f
@@ -72,6 +71,7 @@ map <delete> trash
 map <esc>c clear-trash
 map <backspace2> set hidden!
 map - $~/.config/lf/draw.sh "$f"
+map p :paste; clear
 
 #map Jumpings
 map go cd /opt
@@ -79,3 +79,4 @@ map ge cd /etc
 map gm cd /home/data
 map gr cd /
 map gd cd ~/Downloads
+map gm cd /run/media/

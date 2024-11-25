@@ -15,15 +15,19 @@
 # change all CPU's max scaling frequency to the value of the file name passed.
 # file name is cpu max,min.base frequencies info located at scaling_dir.
 change_scaling_freq(){
-    scaling_freq=$1
+    scaling_freq="$1"
     if [ -z "$scaling_freq" ];then
         return 1
     fi
-    for scaling_dir in /sys/devices/system/cpu/cpu*/cpufreq/; do
-        echo $(cat $scaling_dir/$scaling_freq) > $scaling_dir/scaling_max_freq
+    for scaling_dir in /sys/devices/system/cpu/cpu[0-9]*/cpufreq; do
+        if [ -e "$scaling_dir/$scaling_freq" ];then
+            echo $(cat $scaling_dir/$scaling_freq) > $scaling_dir/scaling_max_freq
+        else
+            echo "$scaling_freq" > $scaling_dir/scaling_max_freq
+        fi
     done
 }
-
+ 
 CPU_FILE=/sys/devices/system/cpu/cpu0/power/energy_perf_bias
 GPU_FILE=/sys/bus/pci/devices/0000\:01\:00.0/power_state
 # Check file existence.
@@ -40,6 +44,7 @@ if [ "$1" == "show" ];then
     GPU=""
     case $EPB in
         0) CPU="";;
+        4) CPU="";;
         6) CPU="";;
         15) CPU="";;
     esac
@@ -60,9 +65,13 @@ if [ "$1" == "toggle" ];then
             echo "1" > /sys/devices/system/cpu/intel_pstate/no_turbo
             change_scaling_freq cpuinfo_min_freq
             ;;
-        6) echo "0" | tee $CPU_PERF
+        4) echo "0" | tee $CPU_PERF
             echo "0" > /sys/devices/system/cpu/intel_pstate/no_turbo
             change_scaling_freq cpuinfo_max_freq
+            ;;
+        6) echo "4" | tee $CPU_PERF
+            echo "0" > /sys/devices/system/cpu/intel_pstate/no_turbo
+            change_scaling_freq 3500000
             ;;
         15) echo "6" | tee $CPU_PERF
             echo "1" > /sys/devices/system/cpu/intel_pstate/no_turbo

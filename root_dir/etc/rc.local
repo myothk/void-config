@@ -34,7 +34,7 @@ if [ "$(cat /sys/class/power_supply/AC?/online)" -eq 0 ]; then
         CPU_FREQ=$CPU_MIN_FREQ
 fi
 
-chmod o+w /sys/devices/system/cpu/cpu*/cpufreq/scaling_max_freq
+chmod o+w /sys/devices/system/cpu/cpu[0-9]*/cpufreq/scaling_max_freq
 for cpudir in /sys/devices/system/cpu/cpu*/cpufreq;do
     if [ -e "$cpudir/scaling_max_freq" ]; then
         echo "$CPU_FREQ" > "$cpudir/scaling_max_freq"

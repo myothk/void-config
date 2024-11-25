@@ -58,12 +58,13 @@
 		}	
 	},
 	"network": {
-		"format-ethernet": " {bandwidthUpBits}  {bandwidthDownBits}  ",
+		"format-ethernet": " {bandwidthUpBytes}  {bandwidthDownBytes}  ",
 		"format-wifi": " {bandwidthUpBits}  {bandwidthDownBits}",
 		"format-disconnected":"",
 		"interval": 1,
 		"tooltip-format": "{ifname}",
 		"tooltip-format-wifi": "{essid} ({signalStrength}%)",	
+                "tooltip-format-ethernet": "{ifname}",
 	},
 	"cpu": {
      		"interval": 1,
@@ -119,7 +120,7 @@
 		"spacing":10
 	},
         "sway/language": {
-                "format": "{shortDescription}",
+                "format": "{flag}",
         },
 	"disk":{
     		"interval": 30,
